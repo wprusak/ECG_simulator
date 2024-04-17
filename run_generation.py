@@ -1,7 +1,15 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import json
 
 from ecg_base import generateBaseEcg 
+
+json_file = open('generation_config.json')
+
+config = json.load(json_file)
+
+print("Config: ")
+print(config)
 
 A = [[-0.313,	-4.680,	1.057,	-0.500,	0.345],
     [0.373	,4.726	,0.690	,0.228	,-0.223]]
@@ -18,6 +26,7 @@ signal = generateBaseEcg(Lengths,A,T,S,C)
 plt.plot(signal)
 plt.plot(np.zeros(len(signal)))
 plt.legend(["ECG signal", "0 axis"])
-plt.savefig("./files/plot.png")
+plt.grid(True)
+plt.savefig("files/plot.png")
 
 print("Plot saved!")
