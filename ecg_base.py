@@ -15,13 +15,12 @@ def generateBaseEcg(wavesLengths,Amplitudes,Times,Stds,C):
         wave += waveGenerator(t,Amplitudes[0,waveNr],Times[0,waveNr],Stds[0,waveNr],C[0,waveNr])
         wave += waveGenerator(t,Amplitudes[1,waveNr],Times[1,waveNr],Stds[1,waveNr],C[1,waveNr])
         signal = np.append(signal,wave)
-    return signal
+    return smooth(signal[150:820],10)
 
 def addFlat(signal,hearthRate,samplingRate):
-    sp = smooth(signal[150:820],10)
-    tp = np.linspace(0,0.6,len(sp))
+    tp = np.linspace(0,0.6,len(signal))
     t = np.linspace(0,0.6,round(0.6*samplingRate))
-    s = np.interp(t,tp,sp)
+    s = np.interp(t,tp,signal)
 
     oneBeatPeriod = 1/(hearthRate/60)
     flatPeriod = oneBeatPeriod - 0.6
