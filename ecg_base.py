@@ -25,9 +25,15 @@ def addFlat(signal,hearthRate,samplingRate):
     oneBeatPeriod = 1/(hearthRate/60)
     flatPeriod = oneBeatPeriod - 0.6
     if flatPeriod >=0 : 
+        tp = np.linspace(0,0.6,len(signal))
+        t = np.linspace(0,0.6,round(0.6*samplingRate))
+        s = np.interp(t,tp,signal)
         zeros = np.zeros(round(flatPeriod*samplingRate))
         signalAppended = np.append(s,zeros)
     else :
+        tp = np.linspace(0,oneBeatPeriod,len(signal))
+        t = np.linspace(0,oneBeatPeriod,round(oneBeatPeriod*samplingRate))
+        s = np.interp(t,tp,signal)
         signalAppended = s
     return signalAppended
 
@@ -56,4 +62,36 @@ def createMultiplePeriods(periods,hearthRate,samplingRate):
     sOut = np.concatenate([s for i in range(periods)])
     tOut = calculateTime(sOut,samplingRate)
     return tOut,sOut
+
+def createEcg(maxTime,hearthRate=60,samplingRate=256,networkNoise = 0,noise = 0,breathFreq = 0.2,breathAmplitude = 0):
+    A = [[-0.313,	-4.680,	1.057,	-0.500,	0.345],
+    [0.373	,4.726	,0.690	,0.228	,-0.223]]
+    T = [[282.660,	87.180,	30.640,	11.120,	177.252],
+        [264.160,	88.000,	15.400,	1.000,	248.027]]
+    S = [[	43.672,	19.990,	14.110,	18.060,	92.944],
+            [50.571,	20.580,	14.110,	5.676,	46.880]]
+    Lengths = [300,88,48,77,429]
+    C = [[0.011,-0.04,-0.27,0.017,-0.001],
+        [0,0,0,0,0]]
+    
+    signal = generateBaseEcg(Lengths,A,T,S,C)
+    s = addFlat(signal,hearthRate,samplingRate)
+    sOut = s
+    tOut = calculateTime(sOut,samplingRate)
+    while tOut[-1] < maxTime :
+        sOut = np.concatenate([sOut,s])
+        tOut = calculateTime(sOut,samplingRate)
+    while tOut[-1] > maxTime:
+        tOut = tOut[:-1]
+        sOut = sOut[:-1]
+
+    if networkNoise >0 :
+        sOut = sOut + networkNoise*np.sin(2*np.pi*50*tOut)
+    if noise >0 :
+        sOut = sOut + np.random.random(len(sOut))*noise
+    if breathAmplitude >0:
+        sOut = sOut + np.sin(2*np.pi*breathFreq*tOut)*breathAmplitude
+    
+    return tOut,sOut
+
     
