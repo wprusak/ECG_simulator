@@ -1,32 +1,26 @@
 import numpy as np
-import matplotlib.pyplot as plt
 import json
 
-from ecg_base import generateBaseEcg 
+from ecg_base import createEcg 
 
 json_file = open('generation_config.json')
 
 config = json.load(json_file)
 
-print("Config: ")
+print("Config in run_generation.py: ")
 print(config)
 
-A = [[-0.313,	-4.680,	1.057,	-0.500,	0.345],
-    [0.373	,4.726	,0.690	,0.228	,-0.223]]
-T = [[282.660,	87.180,	30.640,	11.120,	177.252],
-     [264.160,	88.000,	15.400,	1.000,	248.027]]
-S = [[	43.672,	19.990,	14.110,	18.060,	92.944],
-        [50.571,	20.580,	14.110,	5.676,	46.880]]
-Lengths = [300,88,48,77,429]
-C = [[0.011,-0.04,-0.27,0.017,-0.001],
-     [0,0,0,0,0]]
+print(config['time'])
 
-signal = generateBaseEcg(Lengths,A,T,S,C)
+time = int(config['time'])
+hr = int(config['hr'])
+sr = int(config['sr'])
+net_noise = float(config['network_noise'])
+noise = float(config['noise'])
+breath_freq = float(config['breath_freq'])
+breath_amp = float(config['breath_amp'])
 
-plt.plot(signal)
-plt.plot(np.zeros(len(signal)))
-plt.legend(["ECG signal", "0 axis"])
-plt.grid(True)
-plt.savefig("files/plot.png")
+time, signal = createEcg(maxTime=time, hearthRate=hr, samplingRate=sr, networkNoise=net_noise, noise = noise, breathFreq=breath_freq, breathAmplitude=breath_amp)
 
-print("Plot saved!")
+np.save("time.npy", time)
+np.save("signal.npy", signal)
