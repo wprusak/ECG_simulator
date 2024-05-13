@@ -1,0 +1,6 @@
+signal.npy
+time.npy
+output/ecg.csv
+__pycache__
+generated_data.json
+generation_config.json

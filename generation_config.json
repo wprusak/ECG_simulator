@@ -1,3 +1,9 @@
 {
-    "test": "test"
+    "time": "10",
+    "hr": "60",
+    "sr": "256",
+    "network_noise": "0.005",
+    "noise": "0.001",
+    "breath_freq": "0.2",
+    "breath_amp": "0.001"
 }
